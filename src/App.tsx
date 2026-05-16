@@ -1,22 +1,26 @@
 import { useEffect, useState } from "react";
 import { AppShell } from "./components/AppShell";
 import { AuthGate } from "./components/AuthGate";
+import { CartDrawer } from "./components/CartDrawer";
+import { CheckoutModal } from "./components/CheckoutModal";
 import { DocumentsModal } from "./components/DocumentsModal";
 import { MarketplaceHero } from "./components/MarketplaceHero";
 import { MarketplaceView } from "./components/MarketplaceView";
 import { PublishForm } from "./components/PublishForm";
-import { PurchaseModal } from "./components/PurchaseModal";
 import { SellerDashboard } from "./components/SellerDashboard";
 import { Toast } from "./components/Toast";
 import { usePublications } from "./hooks/usePublications";
 import { useSession } from "./hooks/useSession";
-import type { ApiRecord, ViewMode } from "./types";
-import { readBoolean } from "./utils/records";
+import type { ApiRecord, CartItem, ViewMode } from "./types";
+import { getPublicationId } from "./utils/publication";
+import { readBoolean, readNumber } from "./utils/records";
 
 function AuthenticatedApp() {
   const [activeView, setActiveView] = useState<ViewMode>("market");
   const [notice, setNotice] = useState("");
-  const [purchaseTarget, setPurchaseTarget] = useState<ApiRecord | null>(null);
+  const [cartItems, setCartItems] = useState<CartItem[]>([]);
+  const [isCartOpen, setIsCartOpen] = useState(false);
+  const [isCheckoutOpen, setIsCheckoutOpen] = useState(false);
   const [documentTarget, setDocumentTarget] = useState<ApiRecord | null>(null);
   const { session, logout } = useSession();
   const publications = usePublications();
@@ -51,10 +55,36 @@ function AuthenticatedApp() {
     publications.loadPublications();
   };
 
+  const addToCart = (publication: ApiRecord) => {
+    const publicationId = getPublicationId(publication);
+    setCartItems((current) => {
+      if (current.some((item) => getPublicationId(item.publication) === publicationId)) {
+        return current;
+      }
+      return [...current, { publication }];
+    });
+    setNotice("Bovino agregado al carrito.");
+    setIsCartOpen(true);
+  };
+
+  const removeFromCart = (publicationId: string) => {
+    setCartItems((current) =>
+      current.filter((item) => getPublicationId(item.publication) !== publicationId),
+    );
+  };
+
+  const cartIds = new Set(cartItems.map((item) => getPublicationId(item.publication)));
+  const cartTotal = cartItems.reduce(
+    (sum, item) => sum + readNumber(item.publication, ["price"]),
+    0,
+  );
+
   return (
     <AppShell
       activeView={activeView}
+      cartCount={cartItems.length}
       logout={closeSession}
+      onCartOpen={() => setIsCartOpen(true)}
       session={session}
       setActiveView={setActiveView}
     >
@@ -74,9 +104,11 @@ function AuthenticatedApp() {
         {activeView === "market" && (
           <MarketplaceView
             apiError={publications.apiError}
+            cartIds={cartIds}
             filteredPublications={publications.filteredPublications}
             isLoading={publications.isLoading}
             loadPublications={publications.loadPublications}
+            onAddToCart={addToCart}
             onlySanitary={publications.onlySanitary}
             onlyTransport={publications.onlyTransport}
             purposes={publications.purposes}
@@ -85,7 +117,6 @@ function AuthenticatedApp() {
             setDocumentTarget={setDocumentTarget}
             setOnlySanitary={publications.setOnlySanitary}
             setOnlyTransport={publications.setOnlyTransport}
-            setPurchaseTarget={setPurchaseTarget}
             setQuery={publications.setQuery}
             setSelectedPurpose={publications.setSelectedPurpose}
             setSortMode={publications.setSortMode}
@@ -102,12 +133,28 @@ function AuthenticatedApp() {
         )}
       </main>
 
-      {purchaseTarget && (
-        <PurchaseModal
-          onClose={() => setPurchaseTarget(null)}
-          publication={purchaseTarget}
+      <CartDrawer
+        items={cartItems}
+        onCheckout={() => {
+          setIsCartOpen(false);
+          setIsCheckoutOpen(true);
+        }}
+        onClose={() => setIsCartOpen(false)}
+        onRemove={removeFromCart}
+        open={isCartOpen}
+        total={cartTotal}
+      />
+
+      {isCheckoutOpen && (
+        <CheckoutModal
+          items={cartItems}
+          onClose={() => setIsCheckoutOpen(false)}
+          onSuccess={() => {
+            setCartItems([]);
+            setIsCheckoutOpen(false);
+            setNotice("Pago registrado y solicitudes enviadas al vendedor.");
+          }}
           session={session}
-          setNotice={setNotice}
         />
       )}
 

@@ -56,9 +56,20 @@ export type PurchaseRequestPayload = {
   message: string;
 };
 
-export type PurchaseDraft = {
-  buyerId: string;
-  message: string;
+export type CartItem = {
+  publication: ApiRecord;
+};
+
+export type CheckoutDraft = {
+  fullName: string;
+  email: string;
+  phone: string;
+  paymentMethod: "card" | "yape" | "transfer";
+  cardNumber: string;
+  cardName: string;
+  cardExpiry: string;
+  cardCvv: string;
+  deliveryNotes: string;
 };
 
 export type SanitaryDocumentRequest = {

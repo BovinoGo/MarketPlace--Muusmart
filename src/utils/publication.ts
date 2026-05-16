@@ -12,6 +12,10 @@ export function getPublicationId(publication: ApiRecord): string {
   return readString(publication, ["id", "publicationId"]);
 }
 
+export function getBovineId(publication: ApiRecord): string {
+  return readString(publication, ["bovineId", "animalId"]);
+}
+
 export function getPublicationTitle(publication: ApiRecord): string {
   const bovine = readRecord(publication, ["bovine", "animal"]);
   return (

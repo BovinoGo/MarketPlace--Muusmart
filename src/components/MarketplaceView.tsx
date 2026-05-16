@@ -5,6 +5,7 @@ import { PublicationCard } from "./PublicationCard";
 
 type MarketplaceViewProps = {
   apiError: string;
+  cartIds: Set<string>;
   filteredPublications: ApiRecord[];
   isLoading: boolean;
   loadPublications: () => Promise<void>;
@@ -16,7 +17,7 @@ type MarketplaceViewProps = {
   setDocumentTarget: (publication: ApiRecord) => void;
   setOnlySanitary: (value: boolean) => void;
   setOnlyTransport: (value: boolean) => void;
-  setPurchaseTarget: (publication: ApiRecord) => void;
+  onAddToCart: (publication: ApiRecord) => void;
   setQuery: (value: string) => void;
   setSelectedPurpose: (value: string) => void;
   setSortMode: (value: SortMode) => void;
@@ -25,6 +26,7 @@ type MarketplaceViewProps = {
 
 export function MarketplaceView({
   apiError,
+  cartIds,
   filteredPublications,
   isLoading,
   loadPublications,
@@ -36,7 +38,7 @@ export function MarketplaceView({
   setDocumentTarget,
   setOnlySanitary,
   setOnlyTransport,
-  setPurchaseTarget,
+  onAddToCart,
   setQuery,
   setSelectedPurpose,
   setSortMode,
@@ -139,9 +141,10 @@ export function MarketplaceView({
               {filteredPublications.map((publication, index) => (
                 <PublicationCard
                   index={index}
+                  isInCart={cartIds.has(getPublicationId(publication))}
                   key={getPublicationId(publication) || index}
                   onDocuments={setDocumentTarget}
-                  onPurchase={setPurchaseTarget}
+                  onAddToCart={onAddToCart}
                   publication={publication}
                 />
               ))}

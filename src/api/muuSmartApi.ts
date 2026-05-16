@@ -82,6 +82,11 @@ export function extractSession(payload: unknown, fallback: Session): Session {
   const userId = findStringDeep(payload, [
     "userId",
     "id",
+    "sub",
+    "nameid",
+    "nameIdentifier",
+    "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier",
+    "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/sid",
     "buyerId",
     "sellerId",
     "rancherId",
@@ -92,12 +97,35 @@ export function extractSession(payload: unknown, fallback: Session): Session {
   const responseRole = normalizeRole(
     findStringDeep(payload, ["role", "accountType", "userType", "type"]),
   );
-  const tokenRole = token ? extractRoleFromToken(token) : undefined;
+  const tokenPayload = token ? readTokenPayload(token) : undefined;
+  const tokenRole = tokenPayload
+    ? normalizeRole(
+        findStringDeep(tokenPayload, [
+          "role",
+          "roles",
+          "accountType",
+          "userType",
+          "type",
+          "http://schemas.microsoft.com/ws/2008/06/identity/claims/role",
+        ]),
+      )
+    : undefined;
+  const tokenUserId = tokenPayload
+    ? findStringDeep(tokenPayload, [
+        "userId",
+        "id",
+        "sub",
+        "nameid",
+        "nameIdentifier",
+        "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier",
+        "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/sid",
+      ])
+    : undefined;
 
   return {
     ...fallback,
     token: token ?? fallback.token,
-    userId: userId ?? fallback.userId,
+    userId: userId ?? tokenUserId ?? fallback.userId,
     fullName: fullName ?? fallback.fullName,
     phone: phone ?? fallback.phone,
     role: responseRole ?? tokenRole ?? fallback.role,
@@ -121,15 +149,14 @@ function normalizeRole(value: string | undefined): SessionRole | undefined {
   return undefined;
 }
 
-function extractRoleFromToken(token: string): SessionRole | undefined {
+function readTokenPayload(token: string): unknown {
   const [, payload] = token.split(".");
   if (!payload) return undefined;
 
   try {
     const normalized = payload.replace(/-/g, "+").replace(/_/g, "/");
     const json = atob(normalized.padEnd(Math.ceil(normalized.length / 4) * 4, "="));
-    const parsed = JSON.parse(json) as unknown;
-    return normalizeRole(findStringDeep(parsed, ["role", "accountType", "userType", "type"]));
+    return JSON.parse(json) as unknown;
   } catch {
     return undefined;
   }

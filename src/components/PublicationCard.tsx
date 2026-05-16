@@ -21,15 +21,17 @@ import { readBoolean, readNumber, readString } from "../utils/records";
 
 type PublicationCardProps = {
   index: number;
+  isInCart: boolean;
   onDocuments: (publication: ApiRecord) => void;
-  onPurchase: (publication: ApiRecord) => void;
+  onAddToCart: (publication: ApiRecord) => void;
   publication: ApiRecord;
 };
 
 export function PublicationCard({
   index,
+  isInCart,
   onDocuments,
-  onPurchase,
+  onAddToCart,
   publication,
 }: PublicationCardProps) {
   const title = getPublicationTitle(publication);
@@ -101,9 +103,9 @@ export function PublicationCard({
         </div>
 
         <div className="card-actions">
-          <button className="primary-button" type="button" onClick={() => onPurchase(publication)}>
+          <button className="primary-button" type="button" onClick={() => onAddToCart(publication)}>
             <ShoppingCart size={18} aria-hidden="true" />
-            Solicitar compra
+            {isInCart ? "En carrito" : "Agregar al carrito"}
           </button>
           <button className="icon-text-button" type="button" onClick={() => onDocuments(publication)}>
             <FileText size={18} aria-hidden="true" />

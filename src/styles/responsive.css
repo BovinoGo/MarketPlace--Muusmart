@@ -12,7 +12,8 @@
   .auth-hero,
   .hero-market,
   .market-layout,
-  .documents-grid {
+  .documents-grid,
+  .checkout-grid {
     grid-template-columns: 1fr;
   }
 
@@ -53,7 +54,8 @@
   .publication-main,
   .card-actions,
   .two-column,
-  .mine-item {
+  .mine-item,
+  .payment-options {
     grid-template-columns: 1fr;
   }
 }

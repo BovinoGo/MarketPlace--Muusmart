@@ -93,6 +93,30 @@
   justify-content: flex-end;
 }
 
+.cart-button {
+  background: linear-gradient(135deg, #0d6b50, #2d6f9f);
+  color: white;
+  position: relative;
+}
+
+.cart-button:hover {
+  background: linear-gradient(135deg, #09543f, #255c86);
+  color: white;
+}
+
+.cart-button strong {
+  align-items: center;
+  background: var(--amber);
+  border-radius: 999px;
+  color: var(--deep);
+  display: inline-flex;
+  font-size: 0.75rem;
+  height: 1.35rem;
+  justify-content: center;
+  min-width: 1.35rem;
+  padding: 0 0.28rem;
+}
+
 .session-name {
   color: var(--deep);
   font-weight: 850;

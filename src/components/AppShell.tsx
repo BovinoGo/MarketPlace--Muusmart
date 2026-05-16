@@ -1,11 +1,21 @@
-import { BadgeCheck, LogOut, PackageCheck, PlusCircle, Store, UserRound } from "lucide-react";
+import {
+  BadgeCheck,
+  LogOut,
+  PackageCheck,
+  PlusCircle,
+  ShoppingCart,
+  Store,
+  UserRound,
+} from "lucide-react";
 import type { ReactNode } from "react";
 import type { Session, ViewMode } from "../types";
 
 type AppShellProps = {
   activeView: ViewMode;
+  cartCount: number;
   children: ReactNode;
   logout: () => void;
+  onCartOpen: () => void;
   session: Session;
   setActiveView: (view: ViewMode) => void;
 };
@@ -18,8 +28,10 @@ const navItems: Array<{ view: ViewMode; label: string; icon: typeof Store }> = [
 
 export function AppShell({
   activeView,
+  cartCount,
   children,
   logout,
+  onCartOpen,
   session,
   setActiveView,
 }: AppShellProps) {
@@ -59,6 +71,11 @@ export function AppShell({
         </nav>
 
         <div className="session-pill">
+          <button className="cart-button" type="button" onClick={onCartOpen}>
+            <ShoppingCart size={17} aria-hidden="true" />
+            Carrito
+            {cartCount > 0 && <strong>{cartCount}</strong>}
+          </button>
           <span className="role-badge">
             <BadgeCheck size={15} aria-hidden="true" />
             {canSell ? "Ganadero" : "Comprador"}
