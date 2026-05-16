@@ -1,0 +1,223 @@
+:root {
+  color-scheme: light;
+  font-family:
+    Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+    sans-serif;
+  background: #f3f6ef;
+  color: #14221e;
+  --ink: #14221e;
+  --deep: #09241e;
+  --green: #0f7656;
+  --green-2: #16a36f;
+  --mint: #9cf1c7;
+  --amber: #e3a22d;
+  --coral: #e96548;
+  --blue: #2d6f9f;
+  --muted: #66766f;
+  --line: #d9e4dc;
+  --surface: #ffffff;
+  --surface-strong: #f8fbf8;
+  --soft: #edf6f0;
+  --field: #f8fbf9;
+  --shadow: 0 18px 50px rgba(12, 37, 30, 0.14);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  min-width: 320px;
+  min-height: 100vh;
+  background:
+    linear-gradient(135deg, rgba(243, 246, 239, 1) 0%, rgba(235, 245, 238, 1) 48%, rgba(247, 241, 229, 1) 100%),
+    linear-gradient(90deg, rgba(15, 118, 86, 0.06) 1px, transparent 1px),
+    linear-gradient(180deg, rgba(15, 118, 86, 0.04) 1px, transparent 1px);
+  background-size: auto, 52px 52px, 52px 52px;
+}
+
+button,
+input,
+select,
+textarea {
+  font: inherit;
+}
+
+button {
+  border: 0;
+}
+
+button:disabled {
+  cursor: not-allowed;
+  opacity: 0.64;
+}
+
+main {
+  padding-bottom: 4rem;
+}
+
+input,
+select,
+textarea {
+  background: var(--field);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  color: var(--ink);
+  min-width: 0;
+  outline: 0;
+  padding: 0.86rem 0.95rem;
+  width: 100%;
+}
+
+textarea {
+  min-height: 7rem;
+  resize: vertical;
+}
+
+input:focus,
+select:focus,
+textarea:focus {
+  border-color: var(--green);
+  box-shadow: 0 0 0 3px rgba(15, 118, 86, 0.14);
+}
+
+.primary-button,
+.secondary-button,
+.icon-text-button,
+.mine-actions button,
+.request-row button {
+  align-items: center;
+  border-radius: 8px;
+  cursor: pointer;
+  display: inline-flex;
+  font-weight: 850;
+  gap: 0.5rem;
+  justify-content: center;
+  min-height: 44px;
+  padding: 0.78rem 1rem;
+  transition:
+    background 160ms ease,
+    border-color 160ms ease,
+    color 160ms ease,
+    transform 160ms ease,
+    box-shadow 160ms ease;
+}
+
+.primary-button {
+  background: linear-gradient(135deg, #0d6b50 0%, #12a270 48%, #2d6f9f 100%);
+  color: white;
+  box-shadow: 0 14px 28px rgba(15, 118, 86, 0.24);
+}
+
+.primary-button:hover {
+  box-shadow: 0 18px 34px rgba(15, 118, 86, 0.3);
+  transform: translateY(-1px);
+}
+
+.secondary-button,
+.icon-text-button,
+.mine-actions button,
+.request-row button {
+  background: linear-gradient(180deg, #ffffff, #f7fbf8);
+  border: 1px solid var(--line);
+  color: var(--deep);
+}
+
+.secondary-button:hover,
+.icon-text-button:hover,
+.mine-actions button:hover,
+.request-row button:hover {
+  border-color: var(--green);
+  color: var(--green);
+  transform: translateY(-1px);
+}
+
+.wide {
+  width: 100%;
+}
+
+.section-heading {
+  align-items: center;
+  display: flex;
+  gap: 1rem;
+  justify-content: space-between;
+  margin-bottom: 1rem;
+}
+
+.section-heading h2 {
+  color: var(--ink);
+  font-size: 2.1rem;
+  letter-spacing: 0;
+  margin: 0.15rem 0 0;
+}
+
+.section-kicker,
+.purpose-label {
+  color: var(--green);
+  display: inline-flex;
+  font-size: 0.78rem;
+  font-weight: 900;
+  letter-spacing: 0;
+  text-transform: uppercase;
+}
+
+.toast {
+  align-items: center;
+  background: #103e33;
+  border: 1px solid rgba(156, 241, 199, 0.22);
+  border-radius: 10px;
+  box-shadow: var(--shadow);
+  color: white;
+  display: inline-flex;
+  font-weight: 850;
+  gap: 0.5rem;
+  max-width: min(90vw, 34rem);
+  padding: 0.9rem 1rem;
+  position: fixed;
+  right: 1.25rem;
+  top: 5.7rem;
+  z-index: 80;
+}
+
+.loading-state,
+.empty-state {
+  align-items: center;
+  background: rgba(255, 255, 255, 0.92);
+  border: 1px dashed var(--line);
+  border-radius: 12px;
+  color: var(--muted);
+  display: grid;
+  gap: 0.5rem;
+  justify-items: center;
+  min-height: 16rem;
+  padding: 2rem;
+  text-align: center;
+}
+
+.empty-state strong {
+  color: var(--ink);
+}
+
+.loading-state {
+  color: var(--green);
+  font-weight: 900;
+}
+
+.loading-state.compact {
+  min-height: 8rem;
+}
+
+.spin {
+  animation: spin 900ms linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}

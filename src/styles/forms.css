@@ -1,0 +1,127 @@
+.form-panel,
+.seller-id-panel {
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.98), rgba(248, 252, 249, 0.96));
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  box-shadow: 0 14px 36px rgba(12, 37, 30, 0.08);
+  display: grid;
+  gap: 1rem;
+  padding: 1rem;
+}
+
+.form-panel h3 {
+  border-bottom: 1px solid var(--line);
+  padding-bottom: 0.7rem;
+}
+
+.seller-locked-panel {
+  align-items: center;
+  background:
+    linear-gradient(135deg, rgba(255, 255, 255, 0.98), rgba(239, 248, 243, 0.96));
+  border: 1px solid rgba(15, 118, 86, 0.18);
+  border-radius: 16px;
+  box-shadow: 0 18px 46px rgba(12, 37, 30, 0.1);
+  color: var(--green);
+  display: grid;
+  gap: 0.55rem;
+  justify-items: center;
+  min-height: 16rem;
+  padding: 2rem;
+  text-align: center;
+}
+
+.seller-locked-panel strong {
+  color: var(--deep);
+  font-size: 1.2rem;
+}
+
+.seller-locked-panel span {
+  color: var(--muted);
+  line-height: 1.55;
+  max-width: 34rem;
+}
+
+.seller-form {
+  align-items: start;
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.1fr) minmax(0, 0.9fr);
+}
+
+.two-column {
+  display: grid;
+  gap: 0.8rem;
+  grid-template-columns: 1fr 1fr;
+}
+
+.check-row {
+  align-items: center;
+  color: var(--ink);
+  display: flex;
+  font-weight: 850;
+  gap: 0.6rem;
+}
+
+.check-row input {
+  accent-color: var(--green);
+  height: 1.05rem;
+  width: 1.05rem;
+}
+
+.form-error {
+  background: #fff1ee;
+  border: 1px solid rgba(233, 101, 72, 0.32);
+  border-radius: 8px;
+  color: #9d321d;
+  font-weight: 850;
+  line-height: 1.45;
+  margin: 0;
+  padding: 0.8rem;
+}
+
+.mine-list {
+  display: grid;
+  gap: 0.85rem;
+}
+
+.mine-item {
+  align-items: center;
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: 9rem minmax(0, 1fr) auto;
+  overflow: hidden;
+  padding: 0.8rem;
+}
+
+.mine-item > img {
+  aspect-ratio: 1 / 1;
+  border-radius: 10px;
+  height: 100%;
+  max-height: 9rem;
+  object-fit: cover;
+  width: 100%;
+}
+
+.mine-actions {
+  display: grid;
+  gap: 0.45rem;
+}
+
+.request-list {
+  border-top: 1px solid var(--line);
+  display: grid;
+  gap: 0.55rem;
+  grid-column: 2 / -1;
+  padding-top: 0.75rem;
+}
+
+.request-row {
+  align-items: center;
+  background: var(--field);
+  border-radius: 8px;
+  display: grid;
+  gap: 0.6rem;
+  grid-template-columns: minmax(0, 1fr) auto;
+  padding: 0.65rem;
+}
