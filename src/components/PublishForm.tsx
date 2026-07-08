@@ -2,6 +2,7 @@ import { Loader2, ShieldCheck, Upload } from "lucide-react";
 import { FormEvent, useEffect, useState } from "react";
 import { muuSmartApi } from "../api/muuSmartApi";
 import { contactOptions, defaultPublishForm, salePurposeOptions } from "../data/marketplaceOptions";
+import { RanchBovineFields } from "./RanchBovineFields";
 import type { PublishFormState, Session } from "../types";
 import { getErrorMessage } from "../utils/records";
 
@@ -94,33 +95,18 @@ export function PublishForm({ onPublished, session }: PublishFormProps) {
       <form className="seller-form" onSubmit={submitPublication}>
         <div className="form-panel">
           <h3>Identificacion</h3>
-          <label>
-            Bovine ID
-            <input
-              required
-              value={form.bovineId}
-              onChange={(event) => update("bovineId", event.target.value)}
-              placeholder="UUID del bovino"
-            />
-          </label>
-          <label>
-            Ranch ID
-            <input
-              required
-              value={form.ranchId}
-              onChange={(event) => update("ranchId", event.target.value)}
-              placeholder="UUID del rancho"
-            />
-          </label>
-          <label>
-            Seller ID
-            <input
-              required
-              value={form.sellerId}
-              onChange={(event) => update("sellerId", event.target.value)}
-              placeholder="UUID del vendedor"
-            />
-          </label>
+          <p className="field-hint">
+            Elige el rancho y el bovino que quieres vender. Si aun no los tienes registrados,
+            puedes crearlos aqui mismo sin salir de este formulario.
+          </p>
+          <RanchBovineFields
+            session={session}
+            ranchId={form.ranchId}
+            bovineId={form.bovineId}
+            onRanchChange={(ranchId) => update("ranchId", ranchId)}
+            onBovineChange={(bovineId) => update("bovineId", bovineId)}
+          />
+          <input type="hidden" value={form.sellerId} readOnly />
         </div>
 
         <div className="form-panel">
@@ -243,8 +229,18 @@ export function PublishForm({ onPublished, session }: PublishFormProps) {
           </label>
 
           {error && <p className="form-error">{error}</p>}
+          {(!form.ranchId || !form.bovineId) && (
+            <p className="field-hint">
+              Selecciona (o crea) un rancho y un bovino en el panel de Identificacion para
+              habilitar la publicacion.
+            </p>
+          )}
 
-          <button className="primary-button wide" disabled={isSubmitting} type="submit">
+          <button
+            className="primary-button wide"
+            disabled={isSubmitting || !form.ranchId || !form.bovineId || !form.sellerId}
+            type="submit"
+          >
             {isSubmitting ? <Loader2 className="spin" size={18} /> : <Upload size={18} />}
             Publicar en MuuSmart
           </button>

@@ -50,6 +50,57 @@ export type PublishFormState = Omit<PublishBovineRequest, "price" | "salePurpose
   contactPreference: string;
 };
 
+export type CreateRanchRequest = {
+  ownerId: string;
+  name: string;
+  country: string;
+  region: string;
+  productionType: number;
+  description: string;
+  province: string;
+  district: string;
+  address: string;
+  totalAreaHectares: number;
+  capacityBovines: number;
+  contactPhone: string;
+  contactEmail: string;
+  sanitaryRegistrationCode: string;
+};
+
+export type RanchFormState = Omit<
+  CreateRanchRequest,
+  "productionType" | "totalAreaHectares" | "capacityBovines"
+> & {
+  productionType: string;
+  totalAreaHectares: string;
+  capacityBovines: string;
+};
+
+export type RegisterBovineRequest = {
+  earTagCode: string;
+  name: string;
+  breed: string;
+  sex: number;
+  birthDate: string;
+  category: number;
+  currentWeightKg: number;
+  productivePurpose: number;
+  ranchId: string;
+  ownerId: string;
+  stableId?: string;
+  photoUrl?: string;
+};
+
+export type BovineFormState = Omit<
+  RegisterBovineRequest,
+  "sex" | "category" | "currentWeightKg" | "productivePurpose"
+> & {
+  sex: string;
+  category: string;
+  currentWeightKg: string;
+  productivePurpose: string;
+};
+
 export type PurchaseRequestPayload = {
   publicationId: string;
   buyerId: string;

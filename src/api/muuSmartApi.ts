@@ -1,8 +1,10 @@
 import type {
   ApiRecord,
+  CreateRanchRequest,
   LoginRequest,
   PublishBovineRequest,
   PurchaseRequestPayload,
+  RegisterBovineRequest,
   RegisterBuyerRequest,
   RegisterRancherRequest,
   SanitaryDocumentRequest,
@@ -17,6 +19,9 @@ export const MUUSMART_ENDPOINTS = {
   login: "/api/v1/auth/login",
   registerRancher: "/api/v1/auth/register/rancher",
   registerBuyer: "/api/v1/auth/register/buyer",
+  ranches: "/api/v1/ranches",
+  bovines: "/api/v1/bovines",
+  bovinesByRanch: (ranchId: string) => `/api/v1/bovines/by-ranch/${ranchId}`,
   publications: "/api/v1/marketplace/publications",
   myPublications: "/api/v1/marketplace/publications/mine",
   purchaseRequests: (publicationId: string) =>
@@ -201,6 +206,38 @@ export const muuSmartApi = {
       phone: payload.phone,
       role: "buyer",
     });
+  },
+
+  async getRanches(session: Session): Promise<ApiRecord[]> {
+    const response = await apiFetch<unknown>(MUUSMART_ENDPOINTS.ranches, {
+      headers: authHeaders(session),
+    });
+    return normalizeCollection(response);
+  },
+
+  async createRanch(payload: CreateRanchRequest, session: Session): Promise<ApiRecord> {
+    const response = await apiFetch<unknown>(MUUSMART_ENDPOINTS.ranches, {
+      method: "POST",
+      headers: authHeaders(session),
+      body: JSON.stringify(payload),
+    });
+    return isRecord(response) ? response : {};
+  },
+
+  async getBovinesByRanch(ranchId: string, session: Session): Promise<ApiRecord[]> {
+    const response = await apiFetch<unknown>(MUUSMART_ENDPOINTS.bovinesByRanch(ranchId), {
+      headers: authHeaders(session),
+    });
+    return normalizeCollection(response);
+  },
+
+  async createBovine(payload: RegisterBovineRequest, session: Session): Promise<ApiRecord> {
+    const response = await apiFetch<unknown>(MUUSMART_ENDPOINTS.bovines, {
+      method: "POST",
+      headers: authHeaders(session),
+      body: JSON.stringify(payload),
+    });
+    return isRecord(response) ? response : {};
   },
 
   async getPublications(): Promise<ApiRecord[]> {
