@@ -1,5 +1,6 @@
 import {
   BadgeCheck,
+  Bell,
   LogOut,
   PackageCheck,
   PlusCircle,
@@ -15,7 +16,9 @@ type AppShellProps = {
   cartCount: number;
   children: ReactNode;
   logout: () => void;
+  onAlertsOpen: () => void;
   onCartOpen: () => void;
+  salesAlertCount: number;
   session: Session;
   setActiveView: (view: ViewMode) => void;
 };
@@ -31,7 +34,9 @@ export function AppShell({
   cartCount,
   children,
   logout,
+  onAlertsOpen,
   onCartOpen,
+  salesAlertCount,
   session,
   setActiveView,
 }: AppShellProps) {
@@ -71,6 +76,22 @@ export function AppShell({
         </nav>
 
         <div className="session-pill">
+          {canSell && (
+            <button
+              className="alerts-button"
+              type="button"
+              onClick={onAlertsOpen}
+              aria-label={
+                salesAlertCount > 0
+                  ? `Tienes ${salesAlertCount} interesados en tus publicaciones`
+                  : "Sin interesados nuevos por ahora"
+              }
+              title="Interesados en tus bovinos publicados"
+            >
+              <Bell size={17} aria-hidden="true" />
+              {salesAlertCount > 0 && <strong>{salesAlertCount}</strong>}
+            </button>
+          )}
           <button className="cart-button" type="button" onClick={onCartOpen}>
             <ShoppingCart size={17} aria-hidden="true" />
             Carrito

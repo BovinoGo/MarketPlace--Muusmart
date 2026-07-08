@@ -167,12 +167,45 @@
   gap: 0.45rem;
 }
 
+.mine-item-heading {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  justify-content: space-between;
+}
+
+.interest-badge {
+  align-items: center;
+  background: #fbf1de;
+  border: 1px solid var(--amber);
+  border-radius: 999px;
+  color: #8a5a10;
+  display: inline-flex;
+  font-size: 0.78rem;
+  font-weight: 850;
+  gap: 0.3rem;
+  padding: 0.2rem 0.55rem;
+  white-space: nowrap;
+}
+
+.chevron-open {
+  transform: rotate(180deg);
+  transition: transform 160ms ease;
+}
+
 .request-list {
   border-top: 1px solid var(--line);
   display: grid;
   gap: 0.55rem;
   grid-column: 2 / -1;
   padding-top: 0.75rem;
+}
+
+.request-empty {
+  color: var(--muted);
+  font-size: 0.9rem;
+  margin: 0;
 }
 
 .request-row {

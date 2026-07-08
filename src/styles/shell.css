@@ -104,7 +104,8 @@
   color: white;
 }
 
-.cart-button strong {
+.cart-button strong,
+.alerts-button strong {
   align-items: center;
   background: var(--amber);
   border-radius: 999px;
@@ -115,6 +116,24 @@
   justify-content: center;
   min-width: 1.35rem;
   padding: 0 0.28rem;
+}
+
+.alerts-button {
+  background: var(--soft);
+  border: 1px solid var(--line);
+  color: var(--green);
+  position: relative;
+}
+
+.alerts-button:hover {
+  background: linear-gradient(135deg, #e7f6ee, #f4faf7);
+}
+
+.alerts-button strong {
+  position: absolute;
+  right: -0.4rem;
+  top: -0.4rem;
+  box-shadow: 0 0 0 2px var(--surface);
 }
 
 .session-name {

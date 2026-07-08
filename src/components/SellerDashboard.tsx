@@ -1,4 +1,4 @@
-import { CheckCircle2, Eye, Loader2, PackageCheck, RefreshCw, ShieldCheck, X } from "lucide-react";
+import { BellRing, CheckCircle2, ChevronDown, Loader2, PackageCheck, RefreshCw, ShieldCheck, X } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
 import { muuSmartApi } from "../api/muuSmartApi";
 import type { ApiRecord, Session } from "../types";
@@ -8,12 +8,19 @@ import { getErrorMessage, readNumber, readString } from "../utils/records";
 
 type SellerDashboardProps = {
   onChanged: () => void;
+  onRequestsRefresh: () => void;
+  requestsByPublication: Record<string, ApiRecord[]>;
   session: Session;
 };
 
-export function SellerDashboard({ onChanged, session }: SellerDashboardProps) {
+export function SellerDashboard({
+  onChanged,
+  onRequestsRefresh,
+  requestsByPublication,
+  session,
+}: SellerDashboardProps) {
   const [mine, setMine] = useState<ApiRecord[]>([]);
-  const [requests, setRequests] = useState<Record<string, ApiRecord[]>>({});
+  const [expandedId, setExpandedId] = useState<string | null>(null);
   const [sellerId, setSellerId] = useState(session.userId ?? "");
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
@@ -61,17 +68,8 @@ export function SellerDashboard({ onChanged, session }: SellerDashboardProps) {
     );
   }
 
-  const loadRequests = async (publication: ApiRecord) => {
-    const publicationId = getPublicationId(publication);
-    if (!publicationId) return;
-
-    setError("");
-    try {
-      const response = await muuSmartApi.getPurchaseRequests(publicationId, session);
-      setRequests((current) => ({ ...current, [publicationId]: response }));
-    } catch (requestError) {
-      setError(getErrorMessage(requestError));
-    }
+  const toggleRequests = (publicationId: string) => {
+    setExpandedId((current) => (current === publicationId ? null : publicationId));
   };
 
   const cancelPublication = async (publication: ApiRecord) => {
@@ -125,7 +123,14 @@ export function SellerDashboard({ onChanged, session }: SellerDashboardProps) {
           <span className="section-kicker">Panel vendedor</span>
           <h2>Mis publicaciones</h2>
         </div>
-        <button className="secondary-button" type="button" onClick={loadMine}>
+        <button
+          className="secondary-button"
+          type="button"
+          onClick={() => {
+            loadMine();
+            onRequestsRefresh();
+          }}
+        >
           <RefreshCw size={18} aria-hidden="true" />
           Actualizar
         </button>
@@ -153,12 +158,28 @@ export function SellerDashboard({ onChanged, session }: SellerDashboardProps) {
       <div className="mine-list">
         {mine.map((publication, index) => {
           const publicationId = getPublicationId(publication);
-          const publicationRequests = requests[publicationId] ?? [];
+          const publicationRequests = requestsByPublication[publicationId] ?? [];
+          const hasInterest = publicationRequests.length > 0;
+          const isExpanded = expandedId === publicationId;
+
           return (
-            <article className="mine-item" key={publicationId || index}>
+            <article
+              className={hasInterest ? "mine-item mine-item-interested" : "mine-item"}
+              key={publicationId || index}
+            >
               <img alt={getPublicationTitle(publication)} src={getImageFor(publication, index)} />
               <div>
-                <span className="purpose-label">{getPublicationPurpose(publication)}</span>
+                <div className="mine-item-heading">
+                  <span className="purpose-label">{getPublicationPurpose(publication)}</span>
+                  {hasInterest && (
+                    <span className="interest-badge">
+                      <BellRing size={13} aria-hidden="true" />
+                      {publicationRequests.length === 1
+                        ? "1 interesado"
+                        : `${publicationRequests.length} interesados`}
+                    </span>
+                  )}
+                </div>
                 <h3>{getPublicationTitle(publication)}</h3>
                 <p>{getPublicationDescription(publication)}</p>
                 <strong>
@@ -169,9 +190,13 @@ export function SellerDashboard({ onChanged, session }: SellerDashboardProps) {
                 </strong>
               </div>
               <div className="mine-actions">
-                <button type="button" onClick={() => loadRequests(publication)}>
-                  <Eye size={17} aria-hidden="true" />
-                  Solicitudes
+                <button type="button" onClick={() => toggleRequests(publicationId)}>
+                  <ChevronDown
+                    className={isExpanded ? "chevron-open" : ""}
+                    size={17}
+                    aria-hidden="true"
+                  />
+                  Solicitudes{hasInterest ? ` (${publicationRequests.length})` : ""}
                 </button>
                 <button type="button" onClick={() => confirmSale(publication)}>
                   <CheckCircle2 size={17} aria-hidden="true" />
@@ -183,8 +208,11 @@ export function SellerDashboard({ onChanged, session }: SellerDashboardProps) {
                 </button>
               </div>
 
-              {publicationRequests.length > 0 && (
+              {isExpanded && (
                 <div className="request-list">
+                  {publicationRequests.length === 0 && (
+                    <p className="request-empty">Todavia no hay solicitudes para este bovino.</p>
+                  )}
                   {publicationRequests.map((request, requestIndex) => (
                     <div className="request-row" key={readString(request, ["id"]) || requestIndex}>
                       <span>{readString(request, ["message"], "Solicitud sin mensaje")}</span>
