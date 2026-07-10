@@ -1,7 +1,7 @@
 import { BadgeCheck, Loader2, LockKeyhole, Mail, Phone, ShieldCheck, UserRound } from "lucide-react";
 import { FormEvent, useState } from "react";
 import { muuSmartApi } from "../api/muuSmartApi";
-import type { Session, SessionRole } from "../types";
+import type { Session } from "../types"; 
 import { getErrorMessage } from "../utils/records";
 
 type AuthMode = "login" | "register";
@@ -12,7 +12,6 @@ type AuthGateProps = {
 
 export function AuthGate({ onAuthenticated }: AuthGateProps) {
   const [mode, setMode] = useState<AuthMode>("login");
-  const [role, setRole] = useState<SessionRole>("buyer");
   const [fullName, setFullName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -26,15 +25,25 @@ export function AuthGate({ onAuthenticated }: AuthGateProps) {
     setIsSubmitting(true);
 
     try {
-      const session =
-        mode === "login"
-          ? await muuSmartApi.login({ email, password }, role)
-          : role === "rancher"
-            ? await muuSmartApi.registerRancher({ fullName, email, password, phone })
-            : await muuSmartApi.registerBuyer({ fullName, email, password, phone });
+      let session: Session;
+      
+      if (mode === "login") {
+        // El login sigue sirviendo para ambos. 
+        // Intentamos primero como comprador
+        try {
+          session = await muuSmartApi.login({ email, password }, "buyer");
+        } catch (buyerError) {
+          // Si falla, intentamos como ganadero
+          session = await muuSmartApi.login({ email, password }, "rancher");
+        }
+      } else {
+        // El flujo de registro ahora es EXCLUSIVO para compradores en la web
+        session = await muuSmartApi.registerBuyer({ fullName, email, password, phone });
+      }
 
       onAuthenticated(session);
     } catch (authError) {
+      // Si ambos fallan (o el registro falla), mostramos el error
       setError(getErrorMessage(authError));
     } finally {
       setIsSubmitting(false);
@@ -62,7 +71,7 @@ export function AuthGate({ onAuthenticated }: AuthGateProps) {
             </span>
             <span>
               <BadgeCheck size={18} aria-hidden="true" />
-              Registro por rol
+              Registro de Compradores
             </span>
             <span>
               <BadgeCheck size={18} aria-hidden="true" />
@@ -99,46 +108,28 @@ export function AuthGate({ onAuthenticated }: AuthGateProps) {
             </button>
           </div>
 
-          <div className="auth-role-block">
-            <small>{mode === "login" ? "Entrar como" : "Registrar como"}</small>
-            <div className="role-pills" aria-label="Tipo de cuenta">
-              <button
-                className={role === "rancher" ? "active" : ""}
-                type="button"
-                onClick={() => setRole("rancher")}
-              >
-                Ganadero
-              </button>
-              <button
-                className={role === "buyer" ? "active" : ""}
-                type="button"
-                onClick={() => setRole("buyer")}
-              >
-                Comprador
-              </button>
+          {mode === "register" && (
+            <div className="auth-role-block">
+               <p className="role-hint">
+                 El registro vía web es exclusivo para <strong>Compradores</strong>. 
+                 Si eres Ganadero, por favor descarga nuestra aplicación móvil.
+               </p>
             </div>
-            <p className="role-hint">
-              {role === "buyer"
-                ? "Comprador: puede buscar bovinos y enviar solicitudes de compra."
-                : "Ganadero: puede publicar bovinos y administrar ventas."}
-            </p>
-          </div>
+          )}
 
           {mode === "register" && (
-            <>
-              <label>
-                Nombre completo
-                <span className="input-shell">
-                  <UserRound size={18} aria-hidden="true" />
-                  <input
-                    required
-                    value={fullName}
-                    onChange={(event) => setFullName(event.target.value)}
-                    placeholder="Nombre del ganadero"
-                  />
-                </span>
-              </label>
-            </>
+            <label>
+              Nombre completo
+              <span className="input-shell">
+                <UserRound size={18} aria-hidden="true" />
+                <input
+                  required
+                  value={fullName}
+                  onChange={(event) => setFullName(event.target.value)}
+                  placeholder="Nombre del usuario"
+                />
+              </span>
+            </label>
           )}
 
           <label>
@@ -151,13 +142,13 @@ export function AuthGate({ onAuthenticated }: AuthGateProps) {
                 type="email"
                 value={email}
                 onChange={(event) => setEmail(event.target.value)}
-                placeholder="correo@rancho.com"
+                placeholder="correo@ejemplo.com"
               />
             </span>
           </label>
 
           <label>
-            Contrasena
+            Contraseña
             <span className="input-shell">
               <LockKeyhole size={18} aria-hidden="true" />
               <input
@@ -173,7 +164,7 @@ export function AuthGate({ onAuthenticated }: AuthGateProps) {
 
           {mode === "register" && (
             <label>
-              Telefono
+              Teléfono
               <span className="input-shell">
                 <Phone size={18} aria-hidden="true" />
                 <input
@@ -190,7 +181,7 @@ export function AuthGate({ onAuthenticated }: AuthGateProps) {
 
           <button className="primary-button wide" disabled={isSubmitting} type="submit">
             {isSubmitting ? <Loader2 className="spin" size={18} /> : <LockKeyhole size={18} />}
-            {mode === "login" ? "Entrar al marketplace" : "Crear cuenta y entrar"}
+            {mode === "login" ? "Entrar al marketplace" : "Crear cuenta de comprador"}
           </button>
         </form>
       </section>
