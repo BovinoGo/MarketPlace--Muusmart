@@ -1,9 +1,11 @@
 import {
   BadgeCheck,
   Bell,
+  ChevronDown,
+  Heart,
   LogOut,
   PackageCheck,
-  PlusCircle,
+  Plus,
   ShoppingCart,
   Store,
   UserRound,
@@ -25,7 +27,7 @@ type AppShellProps = {
 
 const navItems: Array<{ view: ViewMode; label: string; icon: typeof Store }> = [
   { view: "market", label: "Mercado", icon: Store },
-  { view: "sell", label: "Publicar", icon: PlusCircle },
+  { view: "sell", label: "Publicar", icon: Plus },
   { view: "mine", label: "Mis ventas", icon: PackageCheck },
 ];
 
@@ -40,7 +42,10 @@ export function AppShell({
   session,
   setActiveView,
 }: AppShellProps) {
-  const canSell = session.role === "rancher";
+  const rawRole = (session.role || "comprador").toLowerCase();
+  const canSell = rawRole !== "buyer" && rawRole !== "comprador";
+  const roleName = rawRole === "rancher" ? "Ganadero" : rawRole === "buyer" ? "Comprador" : rawRole.charAt(0).toUpperCase() + rawRole.slice(1);
+
   const visibleNavItems = canSell
     ? navItems
     : navItems.filter((item) => item.view === "market");
@@ -76,36 +81,29 @@ export function AppShell({
         </nav>
 
         <div className="session-pill">
-          {canSell && (
-            <button
-              className="alerts-button"
-              type="button"
-              onClick={onAlertsOpen}
-              aria-label={
-                salesAlertCount > 0
-                  ? `Tienes ${salesAlertCount} interesados en tus publicaciones`
-                  : "Sin interesados nuevos por ahora"
-              }
-              title="Interesados en tus bovinos publicados"
-            >
-              <Bell size={17} aria-hidden="true" />
-              {salesAlertCount > 0 && <strong>{salesAlertCount}</strong>}
-            </button>
-          )}
-          <button className="cart-button" type="button" onClick={onCartOpen}>
-            <ShoppingCart size={17} aria-hidden="true" />
-            Carrito
-            {cartCount > 0 && <strong>{cartCount}</strong>}
+          <button className="nav-item cart-btn" type="button" aria-label="Carrito" onClick={onCartOpen} style={{ position: 'relative' }}>
+            <ShoppingCart size={18} aria-hidden="true" />
+            {cartCount > 0 && (
+              <span style={{ position: 'absolute', top: '-5px', right: '-8px', background: '#EF4444', color: 'white', fontSize: '0.65rem', fontWeight: 800, padding: '2px 5px', borderRadius: '100px' }}>
+                {cartCount}
+              </span>
+            )}
           </button>
-          <span className="role-badge">
-            <BadgeCheck size={15} aria-hidden="true" />
-            {canSell ? "Ganadero" : "Comprador"}
+          
+          <span className={`role-badge ${canSell ? 'role-badge-ganadero' : ''}`}>
+            <span className="role-dot" />
+            {roleName}
           </span>
-          <UserRound size={17} aria-hidden="true" />
-          <span className="session-name">{session.fullName || session.email}</span>
-          <button type="button" onClick={logout}>
-            <LogOut size={17} aria-hidden="true" />
-            Salir
+
+          <div className="user-profile">
+            <span className="avatar">
+              {session.fullName ? session.fullName.charAt(0).toUpperCase() : session.email?.charAt(0).toUpperCase() || '?'}
+            </span>
+            <span className="session-name">{session.fullName || session.email?.split('@')[0] || 'Usuario'}</span>
+          </div>
+
+          <button type="button" className="nav-item logout-btn" onClick={logout}>
+            <LogOut size={18} aria-hidden="true" />
           </button>
         </div>
       </header>

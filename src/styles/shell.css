@@ -89,8 +89,51 @@
   align-items: center;
   color: var(--green);
   display: inline-flex;
-  gap: 0.55rem;
+  gap: 1.2rem;
   justify-content: flex-end;
+}
+
+.user-profile {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.3rem 0.5rem;
+  border-radius: 20px;
+  background-color: transparent;
+}
+
+.avatar {
+  background-color: #3b8a6e;
+  color: white;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 0.9rem;
+}
+
+.logout-btn {
+  color: var(--muted);
+  background: transparent;
+  padding: 0.5rem;
+  border-radius: 8px;
+}
+
+.logout-btn:hover {
+  background: rgba(0, 0, 0, 0.05);
+}
+
+.favorite-btn {
+  color: var(--muted);
+  padding: 0.5rem;
+  background: transparent;
+}
+
+.favorite-btn:hover {
+  color: var(--ink);
 }
 
 .cart-button {
@@ -152,8 +195,22 @@
   border-radius: 999px;
   color: var(--green);
   display: inline-flex;
-  font-size: 0.78rem;
-  font-weight: 950;
-  gap: 0.35rem;
-  padding: 0.42rem 0.62rem;
+  font-size: 0.82rem;
+  font-weight: 850;
+  gap: 0.45rem;
+  padding: 0.4rem 0.7rem;
+}
+
+.role-badge-ganadero {
+  background: #2b5443;
+  color: white;
+  border: none;
+}
+
+.role-dot {
+  width: 6px;
+  height: 6px;
+  background-color: #6ed39b;
+  border-radius: 50%;
+  display: inline-block;
 }

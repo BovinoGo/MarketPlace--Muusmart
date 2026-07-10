@@ -141,17 +141,18 @@ function normalizeRole(value: string | undefined): SessionRole | undefined {
   if (!value) return undefined;
 
   const role = value.toLowerCase();
-  if (role.includes("buyer") || role.includes("comprador")) return "buyer";
+  if (role.includes("buyer") || role.includes("comprador")) return "Comprador";
+  if (role.includes("empresa")) return "Empresa ganadera";
   if (
     role.includes("rancher") ||
     role.includes("ganadero") ||
     role.includes("seller") ||
     role.includes("company")
   ) {
-    return "rancher";
+    return "Ganadero";
   }
 
-  return undefined;
+  return value.charAt(0).toUpperCase() + value.slice(1);
 }
 
 function readTokenPayload(token: string): unknown {

@@ -1,10 +1,11 @@
-import { Loader2, ShieldCheck, Upload } from "lucide-react";
+import { Info, Loader2, ShieldCheck, Upload, CloudUpload } from "lucide-react";
 import { FormEvent, useEffect, useState } from "react";
 import { muuSmartApi } from "../api/muuSmartApi";
 import { contactOptions, defaultPublishForm, salePurposeOptions } from "../data/marketplaceOptions";
 import { RanchBovineFields } from "./RanchBovineFields";
 import type { PublishFormState, Session } from "../types";
 import { getErrorMessage } from "../utils/records";
+import { isSellerRole } from "../utils/roles";
 
 type PublishFormProps = {
   onPublished: () => void;
@@ -17,9 +18,17 @@ export function PublishForm({ onPublished, session }: PublishFormProps) {
   );
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState("");
+  const [selectedPhoto, setSelectedPhoto] = useState<string | null>(null);
+
+  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files[0]) {
+      const fileUrl = URL.createObjectURL(e.target.files[0]);
+      setSelectedPhoto(fileUrl);
+    }
+  };
 
   useEffect(() => {
-    if (session.role !== "rancher") return;
+    if (!isSellerRole(session.role)) return;
 
     setForm((current) => ({
       ...current,
@@ -27,7 +36,7 @@ export function PublishForm({ onPublished, session }: PublishFormProps) {
     }));
   }, [session.role, session.userId]);
 
-  if (session.role !== "rancher") {
+  if (!isSellerRole(session.role)) {
     return (
       <section className="publish-section">
         <div className="seller-locked-panel">
@@ -87,18 +96,20 @@ export function PublishForm({ onPublished, session }: PublishFormProps) {
     <section className="publish-section">
       <div className="section-heading">
         <div>
-          <span className="section-kicker">Venta ganadera</span>
+          <span className="section-kicker" style={{ textTransform: 'uppercase' }}>Venta ganadera</span>
           <h2>Publicar bovino</h2>
+          <p className="section-subtitle" style={{ color: 'var(--muted)', marginTop: '0.5rem' }}>
+            Completa los datos para que los compradores puedan encontrar tu oferta.
+          </p>
         </div>
       </div>
 
       <form className="seller-form" onSubmit={submitPublication}>
         <div className="form-panel">
-          <h3>Identificacion</h3>
-          <p className="field-hint">
-            Elige el rancho y el bovino que quieres vender. Si aun no los tienes registrados,
-            puedes crearlos aqui mismo sin salir de este formulario.
-          </p>
+          <div className="panel-header">
+            <h3>Identificación</h3>
+            <p className="field-hint">Elige rancho y bovino a vender</p>
+          </div>
           <RanchBovineFields
             session={session}
             ranchId={form.ranchId}
@@ -110,18 +121,24 @@ export function PublishForm({ onPublished, session }: PublishFormProps) {
         </div>
 
         <div className="form-panel">
-          <h3>Oferta</h3>
+          <div className="panel-header">
+            <h3>Oferta</h3>
+            <p className="field-hint">Información para el comprador</p>
+          </div>
+
           <label>
-            Titulo
+            Título del anuncio *
             <input
               required
               value={form.title}
               onChange={(event) => update("title", event.target.value)}
-              placeholder="Novillo Angus listo para engorde"
+              placeholder="Ej: Novillo Angus listo para engorde"
             />
           </label>
+          <div style={{ textAlign: 'right', fontSize: '0.75rem', color: 'var(--muted)', marginTop: '-0.6rem', marginBottom: '0.5rem' }}>0/100</div>
+
           <label>
-            Descripcion
+            Descripción *
             <textarea
               required
               rows={5}
@@ -130,9 +147,11 @@ export function PublishForm({ onPublished, session }: PublishFormProps) {
               placeholder="Peso, raza, salud, condiciones y entrega."
             />
           </label>
+          <div style={{ textAlign: 'right', fontSize: '0.75rem', color: 'var(--muted)', marginTop: '-0.6rem', marginBottom: '0.5rem' }}>0/600</div>
+
           <div className="two-column">
             <label>
-              Precio
+              Precio *
               <input
                 min="0"
                 required
@@ -143,25 +162,31 @@ export function PublishForm({ onPublished, session }: PublishFormProps) {
               />
             </label>
             <label>
-              Moneda
-              <input
+              Moneda *
+              <select
                 required
                 value={form.currency}
-                onChange={(event) => update("currency", event.target.value.toUpperCase())}
-                placeholder="PEN"
-              />
+                onChange={(event) => update("currency", event.target.value)}
+              >
+                <option value="PEN">PEN</option>
+                <option value="USD">USD</option>
+              </select>
             </label>
           </div>
         </div>
 
         <div className="form-panel">
-          <h3>Condiciones</h3>
+          <div className="panel-header">
+            <h3>Condiciones</h3>
+            <p className="field-hint">Propósito y opciones</p>
+          </div>
           <div className="two-column">
             <label>
-              Proposito
+              Propósito *
               <select
                 value={form.salePurpose}
                 onChange={(event) => update("salePurpose", event.target.value)}
+                style={{ paddingRight: '2rem' }}
               >
                 {salePurposeOptions.map((option) => (
                   <option key={option.value} value={option.value}>
@@ -171,10 +196,11 @@ export function PublishForm({ onPublished, session }: PublishFormProps) {
               </select>
             </label>
             <label>
-              Contacto
+              Contacto *
               <select
                 value={form.contactPreference}
                 onChange={(event) => update("contactPreference", event.target.value)}
+                style={{ paddingRight: '2rem' }}
               >
                 {contactOptions.map((option) => (
                   <option key={option.value} value={option.value}>
@@ -185,65 +211,79 @@ export function PublishForm({ onPublished, session }: PublishFormProps) {
             </label>
           </div>
 
-          <label className="check-row">
-            <input
-              checked={form.negotiablePrice}
-              onChange={(event) => update("negotiablePrice", event.target.checked)}
-              type="checkbox"
-            />
-            Precio negociable
-          </label>
-          <label className="check-row">
-            <input
-              checked={form.includesTransport}
-              onChange={(event) => update("includesTransport", event.target.checked)}
-              type="checkbox"
-            />
-            Incluye transporte
-          </label>
-          <label className="check-row">
-            <input
-              checked={form.requiresSanitaryDocumentation}
-              onChange={(event) =>
-                update("requiresSanitaryDocumentation", event.target.checked)
-              }
-              type="checkbox"
-            />
-            Requiere documentacion sanitaria
-          </label>
-          <label className="check-row">
-            <input
-              checked={form.healthSummaryVisible}
-              onChange={(event) => update("healthSummaryVisible", event.target.checked)}
-              type="checkbox"
-            />
-            Mostrar resumen de salud
-          </label>
-          <label className="check-row">
-            <input
-              checked={form.vaccinationHistoryVisible}
-              onChange={(event) => update("vaccinationHistoryVisible", event.target.checked)}
-              type="checkbox"
-            />
-            Mostrar historial de vacunacion
-          </label>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.8rem', marginTop: '1rem' }}>
+            <label style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', gap: '0.6rem', fontWeight: 'bold', color: '#4B5563', cursor: 'pointer' }}>
+              <input
+                checked={form.negotiablePrice}
+                onChange={(event) => update("negotiablePrice", event.target.checked)}
+                type="checkbox"
+                style={{ margin: 0, width: '1.1rem', height: '1.1rem', accentColor: 'var(--green)' }}
+              />
+              Precio negociable
+            </label>
+            <label style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', gap: '0.6rem', fontWeight: 'bold', color: '#4B5563', cursor: 'pointer' }}>
+              <input
+                checked={form.includesTransport}
+                onChange={(event) => update("includesTransport", event.target.checked)}
+                type="checkbox"
+                style={{ margin: 0, width: '1.1rem', height: '1.1rem', accentColor: 'var(--green)' }}
+              />
+              Incluye transporte
+            </label>
+            <label style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', gap: '0.6rem', fontWeight: 'bold', color: '#4B5563', cursor: 'pointer' }}>
+              <input
+                checked={form.requiresSanitaryDocumentation}
+                onChange={(event) =>
+                  update("requiresSanitaryDocumentation", event.target.checked)
+                }
+                type="checkbox"
+                style={{ margin: 0, width: '1.1rem', height: '1.1rem', accentColor: 'var(--green)' }}
+              />
+              Requiere documentación sanitaria
+            </label>
+            <label style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', gap: '0.6rem', fontWeight: 'bold', color: '#4B5563', cursor: 'pointer' }}>
+              <input
+                checked={form.healthSummaryVisible}
+                onChange={(event) => update("healthSummaryVisible", event.target.checked)}
+                type="checkbox"
+                style={{ margin: 0, width: '1.1rem', height: '1.1rem', accentColor: 'var(--green)' }}
+              />
+              Mostrar resumen de salud
+            </label>
+            <label style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', gap: '0.6rem', fontWeight: 'bold', color: '#4B5563', cursor: 'pointer' }}>
+              <input
+                checked={form.vaccinationHistoryVisible}
+                onChange={(event) => update("vaccinationHistoryVisible", event.target.checked)}
+                type="checkbox"
+                style={{ margin: 0, width: '1.1rem', height: '1.1rem', accentColor: 'var(--green)' }}
+              />
+              Mostrar historial de vacunación
+            </label>
+          </div>
 
           {error && <p className="form-error">{error}</p>}
           {(!form.ranchId || !form.bovineId) && (
-            <p className="field-hint">
-              Selecciona (o crea) un rancho y un bovino en el panel de Identificacion para
-              habilitar la publicacion.
-            </p>
+            <div className="warning-box">
+              <Info size={18} />
+              <p>Selecciona un bovino para poder publicar.</p>
+            </div>
           )}
 
           <button
             className="primary-button wide"
             disabled={isSubmitting || !form.ranchId || !form.bovineId || !form.sellerId}
             type="submit"
+            style={{ width: '100%', justifyContent: 'center', marginTop: '0.5rem' }}
           >
-            {isSubmitting ? <Loader2 className="spin" size={18} /> : <Upload size={18} />}
+            {isSubmitting ? <Loader2 className="spin" size={18} /> : <CloudUpload size={18} />}
             Publicar en MuuSmart
           </button>
+
+          <div style={{ textAlign: 'center', marginTop: '0.5rem' }}>
+            <button type="button" className="cancel-text-button">
+              Cancelar
+            </button>
+          </div>
         </div>
       </form>
     </section>

@@ -2,6 +2,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { muuSmartApi } from "../api/muuSmartApi";
 import type { ApiRecord, Session } from "../types";
 import { getPublicationId } from "../utils/publication";
+import { isSellerRole } from "../utils/roles";
 
 const POLL_INTERVAL_MS = 45_000;
 
@@ -11,7 +12,7 @@ export function useSalesAlerts(session: Session) {
   const isFetchingRef = useRef(false);
 
   const refresh = useCallback(async () => {
-    if (session.role !== "rancher" || !session.token || isFetchingRef.current) return;
+    if (!isSellerRole(session.role) || !session.token || isFetchingRef.current) return;
 
     isFetchingRef.current = true;
     setIsLoading(true);
@@ -41,7 +42,7 @@ export function useSalesAlerts(session: Session) {
   }, [session]);
 
   useEffect(() => {
-    if (session.role !== "rancher" || !session.token) {
+    if (!isSellerRole(session.role) || !session.token) {
       setRequestsByPublication({});
       return;
     }

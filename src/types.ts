@@ -1,8 +1,8 @@
 export type ApiRecord = Record<string, unknown>;
 
-export type ViewMode = "market" | "sell" | "mine";
+export type ViewMode = "market" | "sell" | "mine" | "details";
 export type SortMode = "recent" | "priceAsc" | "priceDesc";
-export type SessionRole = "rancher" | "buyer";
+export type SessionRole = string;
 
 export type Session = {
   token?: string;

@@ -309,12 +309,8 @@
 }
 
 .price {
-  background: linear-gradient(135deg, #e7f7ef, #fff5df);
-  border: 1px solid rgba(15, 118, 86, 0.16);
-  border-radius: 10px;
   color: var(--deep);
   font-size: 1.1rem;
-  padding: 0.5rem 0.62rem;
   white-space: nowrap;
 }
 

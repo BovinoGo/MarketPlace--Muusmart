@@ -18,6 +18,7 @@ type MarketplaceViewProps = {
   setOnlySanitary: (value: boolean) => void;
   setOnlyTransport: (value: boolean) => void;
   onAddToCart: (publication: ApiRecord) => void;
+  onView: (publication: ApiRecord) => void;
   setQuery: (value: string) => void;
   setSelectedPurpose: (value: string) => void;
   setSortMode: (value: SortMode) => void;
@@ -39,6 +40,7 @@ export function MarketplaceView({
   setOnlySanitary,
   setOnlyTransport,
   onAddToCart,
+  onView,
   setQuery,
   setSelectedPurpose,
   setSortMode,
@@ -145,6 +147,7 @@ export function MarketplaceView({
                   key={getPublicationId(publication) || index}
                   onDocuments={setDocumentTarget}
                   onAddToCart={onAddToCart}
+                  onView={onView}
                   publication={publication}
                 />
               ))}
