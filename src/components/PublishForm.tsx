@@ -103,17 +103,21 @@ const handlePublish = async () => {
       )}
 
       <section className="publish-section">
-        <div className="section-heading">
+         <div className="section-heading">
+        <div>
+          <span className="section-kicker" style={{ textTransform: 'uppercase' }}>Venta ganadera</span>
           <h2>Publicar bovino</h2>
           <p className="section-subtitle" style={{ color: 'var(--muted)', marginTop: '0.5rem' }}>
             Completa los datos para que los compradores puedan encontrar tu oferta.
           </p>
         </div>
+      </div>
 
         <form className="seller-form" onSubmit={initiateSubmission}>
           <div className="form-panel">
             <div className="panel-header">
               <h3>Identificación</h3>
+              <p className="field-hint">Elige rancho y bovino a vender</p>
             </div>
             <RanchBovineFields
               session={session}
@@ -124,8 +128,11 @@ const handlePublish = async () => {
             />
           </div>
 
-          <div className="form-panel">
+               <div className="form-panel">
+          <div className="panel-header">
             <h3>Oferta</h3>
+            <p className="field-hint">Información para el comprador</p>
+          </div>
             <label>Título *
               <input required value={form.title} onChange={(e) => update("title", e.target.value)} />
             </label>
