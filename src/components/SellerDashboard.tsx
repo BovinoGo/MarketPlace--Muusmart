@@ -1,9 +1,9 @@
-import { BellRing, CheckCircle2, ChevronDown, Loader2, PackageCheck, Plus, ShieldCheck, X, CalendarDays, CheckCircle, XCircle, MessageSquare } from "lucide-react";
+import { CheckCircle2,  Loader2, PackageCheck, Plus, ShieldCheck, CalendarDays, CheckCircle, XCircle } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
 import { muuSmartApi } from "../api/muuSmartApi";
 import type { ApiRecord, Session } from "../types";
 import { formatMoney } from "../utils/format";
-import { getImageFor, getPublicationDescription, getPublicationId, getPublicationPurpose, getPublicationTitle, getPublicationStatus, getPublicationDate } from "../utils/publication";
+import { getImageFor,  getPublicationId, getPublicationPurpose, getPublicationTitle, getPublicationStatus, getPublicationDate } from "../utils/publication";
 import { getErrorMessage, readNumber, readString } from "../utils/records";
 import { isSellerRole } from "../utils/roles";
 import "../styles/marketplace.css"; // Ensure styles are imported
@@ -18,11 +18,9 @@ type SellerDashboardProps = {
 export function SellerDashboard({
   onChanged,
   onRequestsRefresh,
-  requestsByPublication,
   session,
 }: SellerDashboardProps) {
   const [mine, setMine] = useState<ApiRecord[]>([]);
-  const [expandedId, setExpandedId] = useState<string | null>(null);
   const [sellerId, setSellerId] = useState(session.userId ?? "");
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
@@ -84,9 +82,7 @@ export function SellerDashboard({
     );
   }
 
-  const toggleRequests = (publicationId: string) => {
-    setExpandedId((current) => (current === publicationId ? null : publicationId));
-  };
+  
 
   const cancelPublication = async (publication: ApiRecord) => {
     const publicationId = getPublicationId(publication);
@@ -119,18 +115,7 @@ export function SellerDashboard({
     }
   };
 
-  const rejectRequest = async (request: ApiRecord) => {
-    const requestId = readString(request, ["id", "purchaseRequestId"]);
-    if (!requestId) return;
-
-    setError("");
-    try {
-      await muuSmartApi.rejectPurchaseRequest(requestId, session);
-      onChanged();
-    } catch (rejectError) {
-      setError(getErrorMessage(rejectError));
-    }
-  };
+ 
 
   const activasCount = mine.filter(p => getPublicationStatus(p) === 'activa').length;
   const vendidasCount = mine.filter(p => getPublicationStatus(p) === 'vendida').length;
@@ -210,9 +195,7 @@ export function SellerDashboard({
       <div className="mine-list-rows" style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
         {displayedMine.map((publication, index) => {
           const publicationId = getPublicationId(publication);
-          const publicationRequests = requestsByPublication[publicationId] ?? [];
-          const hasInterest = publicationRequests.length > 0;
-          const isExpanded = expandedId === publicationId;
+     
           const status = getPublicationStatus(publication);
           
           const pubDate = new Date(getPublicationDate(publication));

@@ -1,7 +1,6 @@
 import {
   CalendarDays,
   DollarSign,
-  FileText,
   HeartPulse,
   MessageSquare,
   ShieldCheck,
@@ -33,7 +32,6 @@ type PublicationCardProps = {
 export function PublicationCard({
   index,
   isInCart,
-  onDocuments,
   onAddToCart,
   onView,
   publication,
@@ -41,7 +39,6 @@ export function PublicationCard({
   const title = getPublicationTitle(publication);
   const price = readNumber(publication, ["price"]);
   const currency = readString(publication, ["currency"], "PEN");
-  const status = readString(publication, ["status"], "Publicado");
   const purpose = getPublicationPurpose(publication);
   const publishedAt = readString(publication, ["publishedAt", "createdAt"]);
   const contact = readString(publication, ["contactPreference"], "Contacto directo");

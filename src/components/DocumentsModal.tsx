@@ -2,7 +2,7 @@ import { ClipboardCheck, FileText, Loader2, Upload, X } from "lucide-react";
 import { FormEvent, useCallback, useEffect, useState } from "react";
 import { muuSmartApi } from "../api/muuSmartApi";
 import { defaultDocumentDraft } from "../data/marketplaceOptions";
-import type { ApiRecord, DocumentDraft, Session } from "../types";
+import type { ApiRecord, DocumentDraft, Session ,SanitaryDocumentRequest} from "../types";
 import { getPublicationId, getPublicationTitle } from "../utils/publication";
 import { getErrorMessage, readString } from "../utils/records";
 import "../styles/documentsModal.css";

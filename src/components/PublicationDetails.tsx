@@ -1,10 +1,7 @@
 import {
   CalendarDays,
-  DollarSign,
-  HeartPulse,
   Leaf,
   MapPin,
-  MessageSquare,
   Phone,
   ShieldCheck,
   ShoppingCart,
@@ -74,7 +71,6 @@ export function PublicationDetails({
   const vendorFarm = readString(publication, ["ranchName"]) || readString(publication, ["ranch", "name"], "Ganadería No Especificada");
   const vendorLocation = readString(publication, ["location", "ranchLocation"]) || readString(publication, ["ranch", "location"], "Ubicación no especificada");
   
-  const hasSanitaryDocs = readBoolean(publication, ["requiresSanitaryDocumentation"]);
 
   return (
     <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '2rem', fontFamily: 'system-ui, sans-serif' }}>

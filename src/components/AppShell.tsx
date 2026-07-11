@@ -1,28 +1,21 @@
 import {
-  BadgeCheck,
-  Bell,
-  ChevronDown,
-  Heart,
   LogOut,
   PackageCheck,
   Plus,
   ShoppingCart,
-  Store,
-  UserRound,
-} from "lucide-react";
-import type { ReactNode } from "react";
+  Store} from "lucide-react";
 import type { Session, ViewMode } from "../types";
 
 type AppShellProps = {
   activeView: ViewMode;
   cartCount: number;
-  children: ReactNode;
+  children: React.ReactNode;
   logout: () => void;
-  onAlertsOpen: () => void;
+  onAlertsOpen?: () => void;
   onCartOpen: () => void;
-  salesAlertCount: number;
+  salesAlertCount?: number;
   session: Session;
-  setActiveView: (view: ViewMode) => void;
+  setActiveView: React.Dispatch<React.SetStateAction<ViewMode>>;
 };
 
 const navItems: Array<{ view: ViewMode; label: string; icon: typeof Store }> = [
@@ -36,9 +29,7 @@ export function AppShell({
   cartCount,
   children,
   logout,
-  onAlertsOpen,
   onCartOpen,
-  salesAlertCount,
   session,
   setActiveView,
 }: AppShellProps) {

@@ -1,11 +1,9 @@
-import { Check, Loader2, Plus, X, Search, CheckCircle2 } from "lucide-react";
+import { Check, Loader2,  Search, CheckCircle2 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { muuSmartApi } from "../api/muuSmartApi";
 import {
   bovineCategoryOptions,
   defaultBovineForm,
-  defaultRanchForm,
-  productionTypeOptions,
   productivePurposeOptions,
   sexOptions,
 } from "../data/marketplaceOptions";
@@ -35,11 +33,8 @@ export function RanchBovineFields({
   const ownerId = session.userId ?? "";
 
   const [ranches, setRanches] = useState<ApiRecord[]>([]);
-  const [loadingRanches, setLoadingRanches] = useState(false);
-  const [showRanchForm, setShowRanchForm] = useState(false);
-  const [ranchForm, setRanchForm] = useState(() => defaultRanchForm(ownerId));
-  const [ranchError, setRanchError] = useState("");
-  const [savingRanch, setSavingRanch] = useState(false);
+  const [, setLoadingRanches] = useState(false);
+
 
   const [bovines, setBovines] = useState<ApiRecord[]>([]);
   const [loadingBovines, setLoadingBovines] = useState(false);
@@ -113,9 +108,7 @@ export function RanchBovineFields({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [ranches, session]);
 
-  const updateRanchForm = <K extends keyof typeof ranchForm>(key: K, value: (typeof ranchForm)[K]) => {
-    setRanchForm((current) => ({ ...current, [key]: value }));
-  };
+
 
   const updateBovineForm = <K extends keyof typeof bovineForm>(
     key: K,
@@ -124,42 +117,7 @@ export function RanchBovineFields({
     setBovineForm((current) => ({ ...current, [key]: value }));
   };
 
-  const submitRanch = async () => {
-    setRanchError("");
-    setSavingRanch(true);
-    try {
-      const created = await muuSmartApi.createRanch(
-        {
-          ownerId: ranchForm.ownerId || ownerId,
-          name: ranchForm.name,
-          country: ranchForm.country,
-          region: ranchForm.region,
-          productionType: Number(ranchForm.productionType),
-          description: ranchForm.description,
-          province: ranchForm.province,
-          district: ranchForm.district,
-          address: ranchForm.address,
-          totalAreaHectares: Number(ranchForm.totalAreaHectares || 0),
-          capacityBovines: Number(ranchForm.capacityBovines || 0),
-          contactPhone: ranchForm.contactPhone,
-          contactEmail: ranchForm.contactEmail,
-          sanitaryRegistrationCode: ranchForm.sanitaryRegistrationCode,
-        },
-        session,
-      );
-      const newId = recordId(created);
-      const withFallbackName = { ...created, name: created.name ?? ranchForm.name };
-      setRanches((current) => [withFallbackName, ...current]);
-      if (newId) onRanchChange(newId);
-      setShowRanchForm(false);
-      setRanchForm(defaultRanchForm(ownerId));
-    } catch (error) {
-      setRanchError(getErrorMessage(error));
-    } finally {
-      setSavingRanch(false);
-    }
-  };
-
+ 
   const submitBovine = async () => {
     setBovineError("");
     setSavingBovine(true);
