@@ -77,15 +77,16 @@ const handlePublish = async () => {
   return (
     <>
       {showDocModal && (
-        <DocumentsModal
-          publication={{ id: form.bovineId, title: form.title }}
-          session={session}
-          onClose={() => setShowDocModal(false)}
-          setNotice={(msg) => {
-            setShowDocModal(false);
-            handlePublish();
-          }}
-        />
+     <DocumentsModal
+  publication={{ id: form.bovineId, title: form.title }}
+  session={session}
+  onClose={() => setShowDocModal(false)}
+  // Cambia 'msg' por '_' para ignorar el parámetro y satisfacer al compilador
+  setNotice={(_) => {
+    setShowDocModal(false);
+    handlePublish();
+  }}
+/>
       )}
 
       <section className="publish-section">
