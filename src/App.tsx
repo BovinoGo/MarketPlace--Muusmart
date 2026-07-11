@@ -7,16 +7,19 @@ import { DocumentsModal } from "./components/DocumentsModal";
 import { MarketplaceHero } from "./components/MarketplaceHero";
 import { MarketplaceView } from "./components/MarketplaceView";
 import { PublishForm } from "./components/PublishForm";
+import { PublicationDetails } from "./components/PublicationDetails";
 import { SellerDashboard } from "./components/SellerDashboard";
 import { Toast } from "./components/Toast";
 import { usePublications } from "./hooks/usePublications";
 import { useSession } from "./hooks/useSession";
 import type { ApiRecord, CartItem, ViewMode } from "./types";
 import { getPublicationId } from "./utils/publication";
+import { isSellerRole } from "./utils/roles";
 import { readBoolean, readNumber } from "./utils/records";
 
 function AuthenticatedApp() {
   const [activeView, setActiveView] = useState<ViewMode>("market");
+  const [activePublication, setActivePublication] = useState<ApiRecord | null>(null);
   const [notice, setNotice] = useState("");
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
   const [isCartOpen, setIsCartOpen] = useState(false);
@@ -24,7 +27,8 @@ function AuthenticatedApp() {
   const [documentTarget, setDocumentTarget] = useState<ApiRecord | null>(null);
   const { session, logout } = useSession();
   const publications = usePublications();
-  const canSell = session.role === "rancher";
+
+  const canSell = isSellerRole(session.role);
 
   useEffect(() => {
     if (!notice) return;
@@ -32,12 +36,12 @@ function AuthenticatedApp() {
     return () => window.clearTimeout(timer);
   }, [notice]);
 
-  useEffect(() => {
-    if (!canSell && activeView !== "market") {
-      setActiveView("market");
-      setNotice("Los compradores solo pueden navegar y solicitar compras.");
-    }
-  }, [activeView, canSell]);
+ useEffect(() => {
+  if (!canSell && (activeView === "sell" || activeView === "mine")) {
+    setActiveView("market");
+    setNotice("Los compradores solo pueden publicar compras, no administrar ventas.");
+  }
+}, [activeView, canSell]);
 
   const closeSession = () => {
     logout();
@@ -80,47 +84,68 @@ function AuthenticatedApp() {
   );
 
   return (
-    <AppShell
-      activeView={activeView}
-      cartCount={cartItems.length}
-      logout={closeSession}
-      onCartOpen={() => setIsCartOpen(true)}
-      session={session}
-      setActiveView={setActiveView}
-    >
+   <AppShell
+  activeView={activeView}
+  cartCount={cartItems.length}
+  logout={closeSession}
+  onAlertsOpen={() => {
+    setNotice("No tienes nuevas alertas.");
+  }}
+  onCartOpen={() => setIsCartOpen(true)}
+  salesAlertCount={0}
+  session={session}
+  setActiveView={setActiveView}
+>
       <Toast message={notice} />
 
       <main>
-        <MarketplaceHero
-          averagePrice={publications.averagePrice}
-          negotiableCount={
-            publications.publications.filter((item) => readBoolean(item, ["negotiablePrice"])).length
-          }
-          publicationCount={publications.publications.length}
-          query={publications.query}
-          setQuery={publications.setQuery}
-        />
-
         {activeView === "market" && (
-          <MarketplaceView
-            apiError={publications.apiError}
-            cartIds={cartIds}
-            filteredPublications={publications.filteredPublications}
-            isLoading={publications.isLoading}
-            loadPublications={publications.loadPublications}
-            onAddToCart={addToCart}
-            onlySanitary={publications.onlySanitary}
-            onlyTransport={publications.onlyTransport}
-            purposes={publications.purposes}
-            query={publications.query}
-            selectedPurpose={publications.selectedPurpose}
-            setDocumentTarget={setDocumentTarget}
-            setOnlySanitary={publications.setOnlySanitary}
-            setOnlyTransport={publications.setOnlyTransport}
-            setQuery={publications.setQuery}
-            setSelectedPurpose={publications.setSelectedPurpose}
-            setSortMode={publications.setSortMode}
-            sortMode={publications.sortMode}
+          <>
+            <MarketplaceHero
+              averagePrice={publications.averagePrice}
+              negotiableCount={
+                publications.publications.filter((item) => readBoolean(item, ["negotiablePrice"])).length
+              }
+              publicationCount={publications.publications.length}
+              query={publications.query}
+              setQuery={publications.setQuery}
+            />
+            <MarketplaceView
+              apiError={publications.apiError}
+              cartIds={cartIds}
+              filteredPublications={publications.filteredPublications}
+              isLoading={publications.isLoading}
+              loadPublications={publications.loadPublications}
+              onAddToCart={addToCart}
+              onView={(pub) => {
+                setActivePublication(pub);
+                setActiveView("details");
+              }}
+              onlySanitary={publications.onlySanitary}
+              onlyTransport={publications.onlyTransport}
+              purposes={publications.purposes}
+              query={publications.query}
+              selectedPurpose={publications.selectedPurpose}
+              setDocumentTarget={setDocumentTarget}
+              setOnlySanitary={publications.setOnlySanitary}
+              setOnlyTransport={publications.setOnlyTransport}
+              setQuery={publications.setQuery}
+              setSelectedPurpose={publications.setSelectedPurpose}
+              setSortMode={publications.setSortMode}
+              sortMode={publications.sortMode}
+            />
+          </>
+        )}
+
+        {activeView === "details" && activePublication && (
+          <PublicationDetails
+            publication={activePublication}
+            onBack={() => {
+              setActivePublication(null);
+              setActiveView("market");
+            }}
+            onAddToCart={() => addToCart(activePublication)}
+            isInCart={cartIds.has(getPublicationId(activePublication))}
           />
         )}
 
@@ -129,7 +154,12 @@ function AuthenticatedApp() {
         )}
 
         {activeView === "mine" && canSell && (
-          <SellerDashboard onChanged={changed} session={session} />
+          <SellerDashboard
+            onChanged={changed}
+            session={session}
+            requestsByPublication={{}}
+            onRequestsRefresh={() => {}}
+          />
         )}
       </main>
 

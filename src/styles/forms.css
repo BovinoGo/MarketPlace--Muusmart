@@ -11,8 +11,16 @@
 }
 
 .form-panel h3 {
+  border: none;
+  padding: 0;
+  margin: 0;
+}
+
+.panel-header {
   border-bottom: 1px solid var(--line);
-  padding-bottom: 0.7rem;
+  padding-bottom: 0.8rem;
+  display: grid;
+  gap: 0.25rem;
 }
 
 .seller-locked-panel {
@@ -59,6 +67,7 @@
   align-items: center;
   color: var(--ink);
   display: flex;
+  flex-direction: row;
   font-weight: 850;
   gap: 0.6rem;
 }
@@ -67,6 +76,67 @@
   accent-color: var(--green);
   height: 1.05rem;
   width: 1.05rem;
+  flex-shrink: 0;
+  margin: 0;
+}
+
+.field-hint {
+  color: var(--muted);
+  font-size: 0.85rem;
+  line-height: 1.4;
+  margin: 0;
+}
+
+.picker-group {
+  display: grid;
+  gap: 1rem;
+}
+
+.picker-field {
+  display: grid;
+  gap: 0.4rem;
+}
+
+.picker-field > label {
+  font-weight: 850;
+}
+
+.picker-row {
+  align-items: center;
+  display: grid;
+  gap: 0.5rem;
+  grid-template-columns: minmax(0, 1fr) auto;
+}
+
+.picker-row select {
+  width: 100%;
+}
+
+.ghost-button {
+  align-items: center;
+  background: var(--field);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  color: var(--deep);
+  display: inline-flex;
+  font-weight: 850;
+  gap: 0.4rem;
+  padding: 0.55rem 0.8rem;
+  white-space: nowrap;
+}
+
+.ghost-button:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+.inline-create-panel {
+  background: var(--field);
+  border: 1px dashed rgba(15, 118, 86, 0.35);
+  border-radius: 12px;
+  display: grid;
+  gap: 0.7rem;
+  padding: 0.9rem;
 }
 
 .form-error {
@@ -108,12 +178,45 @@
   gap: 0.45rem;
 }
 
+.mine-item-heading {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  justify-content: space-between;
+}
+
+.interest-badge {
+  align-items: center;
+  background: #fbf1de;
+  border: 1px solid var(--amber);
+  border-radius: 999px;
+  color: #8a5a10;
+  display: inline-flex;
+  font-size: 0.78rem;
+  font-weight: 850;
+  gap: 0.3rem;
+  padding: 0.2rem 0.55rem;
+  white-space: nowrap;
+}
+
+.chevron-open {
+  transform: rotate(180deg);
+  transition: transform 160ms ease;
+}
+
 .request-list {
   border-top: 1px solid var(--line);
   display: grid;
   gap: 0.55rem;
   grid-column: 2 / -1;
   padding-top: 0.75rem;
+}
+
+.request-empty {
+  color: var(--muted);
+  font-size: 0.9rem;
+  margin: 0;
 }
 
 .request-row {
@@ -124,4 +227,44 @@
   gap: 0.6rem;
   grid-template-columns: minmax(0, 1fr) auto;
   padding: 0.65rem;
+}
+
+.warning-box {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  background-color: #fff8d6;
+  color: #8c6a1d;
+  padding: 1rem;
+  border-radius: 12px;
+  border: 1px solid #fbe598;
+  font-weight: 500;
+}
+
+.warning-box p {
+  margin: 0;
+  font-size: 0.9rem;
+}
+
+.cancel-text-button {
+  background: white;
+  border: 1px solid var(--line);
+  color: var(--muted);
+  font-weight: 850;
+  cursor: pointer;
+  padding: 0.78rem 1rem;
+  border-radius: 8px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+  transition: all 0.2s ease;
+  width: 100%;
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 44px;
+}
+
+.cancel-text-button:hover {
+  color: var(--ink);
+  background: #f9fafb;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
 }

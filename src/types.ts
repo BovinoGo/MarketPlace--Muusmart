@@ -1,8 +1,8 @@
 export type ApiRecord = Record<string, unknown>;
 
-export type ViewMode = "market" | "sell" | "mine";
+export type ViewMode = "market" | "sell" | "mine" | "details";
 export type SortMode = "recent" | "priceAsc" | "priceDesc";
-export type SessionRole = "rancher" | "buyer";
+export type SessionRole = string;
 
 export type Session = {
   token?: string;
@@ -48,6 +48,57 @@ export type PublishFormState = Omit<PublishBovineRequest, "price" | "salePurpose
   price: string;
   salePurpose: string;
   contactPreference: string;
+};
+
+export type CreateRanchRequest = {
+  ownerId: string;
+  name: string;
+  country: string;
+  region: string;
+  productionType: number;
+  description: string;
+  province: string;
+  district: string;
+  address: string;
+  totalAreaHectares: number;
+  capacityBovines: number;
+  contactPhone: string;
+  contactEmail: string;
+  sanitaryRegistrationCode: string;
+};
+
+export type RanchFormState = Omit<
+  CreateRanchRequest,
+  "productionType" | "totalAreaHectares" | "capacityBovines"
+> & {
+  productionType: string;
+  totalAreaHectares: string;
+  capacityBovines: string;
+};
+
+export type RegisterBovineRequest = {
+  earTagCode: string;
+  name: string;
+  breed: string;
+  sex: number;
+  birthDate: string;
+  category: number;
+  currentWeightKg: number;
+  productivePurpose: number;
+  ranchId: string;
+  ownerId: string;
+  stableId?: string;
+  photoUrl?: string;
+};
+
+export type BovineFormState = Omit<
+  RegisterBovineRequest,
+  "sex" | "category" | "currentWeightKg" | "productivePurpose"
+> & {
+  sex: string;
+  category: string;
+  currentWeightKg: string;
+  productivePurpose: string;
 };
 
 export type PurchaseRequestPayload = {

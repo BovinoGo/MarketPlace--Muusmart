@@ -2,7 +2,7 @@ import { ClipboardCheck, FileText, Loader2, Upload, X } from "lucide-react";
 import { FormEvent, useCallback, useEffect, useState } from "react";
 import { muuSmartApi } from "../api/muuSmartApi";
 import { defaultDocumentDraft } from "../data/marketplaceOptions";
-import type { ApiRecord, DocumentDraft, Session } from "../types";
+import type { ApiRecord, DocumentDraft, Session ,SanitaryDocumentRequest} from "../types";
 import { getPublicationId, getPublicationTitle } from "../utils/publication";
 import { getErrorMessage, readString } from "../utils/records";
 import "../styles/documentsModal.css";
@@ -46,29 +46,49 @@ export function DocumentsModal({
   const update = <K extends keyof DocumentDraft>(key: K, value: DocumentDraft[K]) => {
     setDraft((current) => ({ ...current, [key]: value }));
   };
-
-  const submitDocument = async (event: FormEvent<HTMLFormElement>) => {
+const submitDocument = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     setError("");
     setIsSubmitting(true);
+
     try {
+      // 1. Prevenir "Invalid Date" si el string viene con formato raro o vacío
+      const safeIssuedAt = draft.issuedAt 
+        ? new Date(draft.issuedAt).toISOString() 
+        : new Date().toISOString(); // Fallback seguro
+
+      // 2. Si no hay fecha de vencimiento, enviar nulo explícito (o undefined, según lo que prefiera tu API)
+      const safeExpiresAt = draft.expiresAt 
+        ? new Date(draft.expiresAt).toISOString() 
+        : null;
+
+      // 3. Manejar campos opcionales vacíos
+      const safeNotes = draft.notes && draft.notes.trim() !== "" 
+        ? draft.notes.trim() 
+        : "Sin notas adicionales";
+
+      // 4. Construir un payload limpio
+      const payload: SanitaryDocumentRequest = {
+        publicationId: publicationId,
+        documentType: draft.documentType.trim(),
+        documentNumber: draft.documentNumber.trim(),
+        issuedBy: draft.issuedBy.trim(),
+        issuedAt: safeIssuedAt,
+        expiresAt: safeExpiresAt,
+        notes: safeNotes,
+      };
+
       await muuSmartApi.createSanitaryDocument(
         publicationId,
-        {
-          publicationId,
-          documentType: draft.documentType,
-          documentNumber: draft.documentNumber,
-          issuedBy: draft.issuedBy,
-          issuedAt: new Date(draft.issuedAt).toISOString(),
-          expiresAt: draft.expiresAt ? new Date(draft.expiresAt).toISOString() : null,
-          notes: draft.notes,
-        },
-        session,
+        payload,
+        session
       );
+      
       setNotice("Documento sanitario registrado.");
       setDraft(defaultDocumentDraft);
       loadDocuments();
     } catch (submitError) {
+      // getErrorMessage mostrará la respuesta exacta si tu backend manda detalles
       setError(getErrorMessage(submitError));
     } finally {
       setIsSubmitting(false);
