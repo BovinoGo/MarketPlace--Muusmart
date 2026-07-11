@@ -258,9 +258,7 @@ export function PublicationDetails({
               </div>
             </div>
 
-            <button style={{ width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem', background: 'transparent', color: '#374151', padding: '0.7rem', borderRadius: '10px', fontSize: '0.9rem', fontWeight: 750, border: '1px solid #E5E7EB', cursor: 'pointer', transition: 'all 0.2s' }}>
-              <Phone size={16} /> Llamar ahora
-            </button>
+          
           </div>
           
         </div>

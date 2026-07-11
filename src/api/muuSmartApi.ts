@@ -13,7 +13,7 @@ import type {
 } from "../types";
 import { findStringDeep, isRecord, normalizeCollection, readRecord, readString } from "../utils/records";
 
-const API_BASE = (import.meta.env.VITE_API_BASE_URL ?? "").replace(/\/$/, "");
+const API_BASE = "https://testttttvacapp-production.up.railway.app";
 
 export const MUUSMART_ENDPOINTS = {
   login: "/api/v1/auth/login",

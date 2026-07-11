@@ -36,12 +36,12 @@ function AuthenticatedApp() {
     return () => window.clearTimeout(timer);
   }, [notice]);
 
-  useEffect(() => {
-    if (!canSell && activeView !== "market") {
-      setActiveView("market");
-      setNotice("Los compradores solo pueden navegar y solicitar compras.");
-    }
-  }, [activeView, canSell]);
+ useEffect(() => {
+  if (!canSell && (activeView === "sell" || activeView === "mine")) {
+    setActiveView("market");
+    setNotice("Los compradores solo pueden publicar compras, no administrar ventas.");
+  }
+}, [activeView, canSell]);
 
   const closeSession = () => {
     logout();
@@ -84,14 +84,18 @@ function AuthenticatedApp() {
   );
 
   return (
-    <AppShell
-      activeView={activeView}
-      cartCount={cartItems.length}
-      logout={closeSession}
-      onCartOpen={() => setIsCartOpen(true)}
-      session={session}
-      setActiveView={setActiveView}
-    >
+   <AppShell
+  activeView={activeView}
+  cartCount={cartItems.length}
+  logout={closeSession}
+  onAlertsOpen={() => {
+    setNotice("No tienes nuevas alertas.");
+  }}
+  onCartOpen={() => setIsCartOpen(true)}
+  salesAlertCount={0}
+  session={session}
+  setActiveView={setActiveView}
+>
       <Toast message={notice} />
 
       <main>
